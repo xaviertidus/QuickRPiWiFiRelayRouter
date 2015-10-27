@@ -8,7 +8,7 @@ apt-get update -y
 apt-get install hostapd hoastap-utils iw dnsmasq -y
 sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
 
-wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/iptables.ipv4.nat > /etc/iptables.ipv4.nat
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/iptables.ipv4.nat > iptable-rules && chmod 775 iptable-rules && ./iptable-rules 
 wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/dnsmasq.conf > /etc/dnsmasq.conf
 wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/hostapd.conf > /etc/hostapd/hostapd.conf
 wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/interfaces > /etc/network/interfaces
