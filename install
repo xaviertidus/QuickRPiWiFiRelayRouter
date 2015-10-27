@@ -5,15 +5,26 @@ read -p "Please enter the SSID to broadcast: " in_wifi_ssid
 read -p "Please enter the secret for the broadcasted wifi: " in_wifi_secret
 
 apt-get update -y
-apt-get install hostapd hoastap-utils iw dnsmasq -y
+apt-get install hostapd hostap-utils iw dnsmasq -y
 sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
 
 wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/iptables.ipv4.nat > iptable-rules && chmod 775 iptable-rules && ./iptable-rules 
-wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/dnsmasq.conf > /etc/dnsmasq.conf
-wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/hostapd.conf > /etc/hostapd/hostapd.conf
-wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/interfaces > /etc/network/interfaces
-wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/iptables.ipv4.nat > /etc/iptables.ipv4.nat
-wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/sysctl.conf > /etc/sysctl.conf
+
+mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/dnsmasq.conf -O temp-file
+mv temp-file /etc/dnsmasq.conf
+
+mv /etc/hostapd.conf /etc/hostapd.conf.bak
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/hostapd.conf -O /etc/hostapd/hostapd.conf
+mv temp-file /etc/hostapd.conf
+
+mv /etc/network/interfaces /etc/network/interfaces.bak
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/interfaces -O /etc/network/interfaces
+mv temp-file /etc/network/interfaces
+
+mv /etc/sysctl.conf /etc/sysctl.conf.bak
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/sysctl.conf -O /etc/sysctl.conf
+mv temp-file /etc/sysctl.conf
 
 #setup /etc/wpa_supplicant/wpa_supplicant.conf
 echo "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev" > /etc/wpa_supplicant/wpa_supplicant.conf
