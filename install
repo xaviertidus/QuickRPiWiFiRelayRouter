@@ -1,0 +1,34 @@
+#!/bin/bash
+read -p "Please enter the SSID to connect to: " out_wifi_ssid
+read -p "Please enter the secret for the wifi connect to: " out_wifi_secret
+read -p "Please enter the SSID to broadcast: " in_wifi_ssid
+read -p "Please enter the secret for the broadcasted wifi: " in_wifi_secret
+
+apt-get update -y
+apt-get install hostapd hoastap-utils iw dnsmasq -y
+sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
+
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/iptables.ipv4.nat > /etc/iptables.ipv4.nat
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/dnsmasq.conf > /etc/dnsmasq.conf
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/hostapd.conf > /etc/hostapd/hostapd.conf
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/interfaces > /etc/network/interfaces
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/iptables.ipv4.nat > /etc/iptables.ipv4.nat
+wget https://raw.githubusercontent.com/xaviertidus/QuickRPiWiFiRelayRouter/master/sysctl.conf > /etc/sysctl.conf
+
+#setup /etc/wpa_supplicant/wpa_supplicant.conf
+echo "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev" > /etc/wpa_supplicant/wpa_supplicant.conf
+echo "update_config=1" >> /etc/wpa_supplicant/wpa_supplicant.conf
+echo "" >> /etc/wpa_supplicant/wpa_supplicant.conf
+echo "network={" >> /etc/wpa_supplicant/wpa_supplicant.conf
+echo "ssid=\"$in_wifi_ssid\"" >> /etc/wpa_supplicant/wpa_supplicant.conf
+echo "psk=$in_wifi_secret" >> /etc/wpa_supplicant/wpa_supplicant.conf
+echo "key_mgmt=WPA-PSK" >> /etc/wpa_supplicant/wpa_supplicant.conf
+echo "}" >> /etc/wpa_supplicant/wpa_supplicant.conf
+
+#update /etc/hostapd/hostapd.conf
+echo "ssid=\"$out_wifi_ssid\"" >> /etc/hostapd/hostapd.conf
+echo "wpa_passphrase=\"$out_wifi_secret\"" >> /etc/hostapd/hostapd.conf
+
+update-rc.d dnsmasq enable
+update-rc.d hostapd enable
+
